@@ -17,8 +17,8 @@ public class Recipe {
     @SerializedName("description")
     private String description;
 
-    @SerializedName("imageUrl")
-    private String imageUrl;
+    @SerializedName("images")
+    private List<ImageData> images;
 
     @SerializedName("ingredients")
     private List<Ingredient> ingredients;
@@ -36,7 +36,10 @@ public class Recipe {
     }
 
     public String getImageUrl() {
-        return imageUrl;
+        if(images == null || images.size() == 0){
+            return "";
+        }
+        return images.get(0).getImageUrl();
     }
 
     public List<Ingredient> getIngredients() {

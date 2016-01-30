@@ -2,4 +2,8 @@
     <!-- Default screen margins, per the Android Design guidelines. -->
     <dimen name="activity_horizontal_margin">16dp</dimen>
     <dimen name="activity_vertical_margin">16dp</dimen>
+    <dimen name="recipe_title_size">20sp</dimen>
+    <dimen name="recipe_description_size">16sp</dimen>
+    <dimen name="recipe_row_margin">10dp</dimen>
+    <dimen name="recipe_row_padding">5dp</dimen>
 </resources>
