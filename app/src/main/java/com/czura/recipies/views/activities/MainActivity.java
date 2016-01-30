@@ -1,6 +1,7 @@
 package com.czura.recipies.views.activities;
 
 import android.app.SearchManager;
+import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
@@ -14,6 +15,7 @@ import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 
 import com.czura.recipies.R;
 import com.czura.recipies.RecipesApplication;
@@ -131,6 +133,7 @@ public class MainActivity extends AppCompatActivity implements RecipesListView {
         searchView.setSuggestionsAdapter(searchAdapter);
         searchView.setOnSuggestionListener(recipesListPresenter);
         searchView.setOnQueryTextListener(recipesListPresenter);
+        searchView.setOnCloseListener(recipesListPresenter);
     }
 
     @Override
@@ -154,5 +157,22 @@ public class MainActivity extends AppCompatActivity implements RecipesListView {
     @Override
     public void insertSuggestions(Cursor cursor) {
         searchAdapter.changeCursor(cursor);
+    }
+
+    @Override
+    public void suggestionClicked(int position) {
+        Cursor cursor = searchAdapter.getCursor();
+        cursor.moveToPosition(position);
+        recipesListPresenter.filterRecipesBy(cursor);
+        hideSearch();
+    }
+
+    @Override
+    public void hideSearch() {
+        View view = this.getCurrentFocus();
+        if (view != null) {
+            InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+            imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+        }
     }
 }

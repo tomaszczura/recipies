@@ -16,4 +16,6 @@ public interface RecipesListView extends View {
     void hideLoading();
     void showRecipeDetails(Recipe recipe);
     void insertSuggestions(Cursor cursor);
+    void suggestionClicked(int position);
+    void hideSearch();
 }

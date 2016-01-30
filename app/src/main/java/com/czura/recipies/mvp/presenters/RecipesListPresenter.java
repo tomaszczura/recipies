@@ -1,5 +1,6 @@
 package com.czura.recipies.mvp.presenters;
 
+import android.database.Cursor;
 import android.database.MatrixCursor;
 import android.provider.BaseColumns;
 import android.support.v7.widget.SearchView;
@@ -25,13 +26,15 @@ import retrofit2.Response;
 /**
  * Created by Tomasz on 30.01.2016.
  */
-public class RecipesListPresenter implements Presenter, SearchView.OnQueryTextListener, SearchView.OnSuggestionListener {
+public class RecipesListPresenter implements Presenter, SearchView.OnQueryTextListener, SearchView.OnSuggestionListener, SearchView.OnCloseListener {
     private static final String TAG = RecipesListPresenter.class.getSimpleName();
 
     private RestDataSource restApi;
     private RecipesListView view;
 
     private ExecutorService saveService = Executors.newSingleThreadExecutor();
+
+    private List<Recipe> recipes;
 
     @Inject
     public RecipesListPresenter(RestDataSource restApi) {
@@ -72,7 +75,7 @@ public class RecipesListPresenter implements Presenter, SearchView.OnQueryTextLi
 
         @Override
         public void onResponse(Response<List<Recipe>> response) {
-            List<Recipe> recipes = response.body();
+            recipes = response.body();
             saveService.execute(new RecipeSaveTask(recipes));
 
             view.hideLoading();
@@ -82,7 +85,8 @@ public class RecipesListPresenter implements Presenter, SearchView.OnQueryTextLi
         @Override
         public void onFailure(Throwable t) {
             view.hideLoading();
-            view.bindRecipeList(Recipe.getAllRecipes());
+            recipes = Recipe.getAllRecipes();
+            view.bindRecipeList(recipes);
         }
     };
 
@@ -112,7 +116,7 @@ public class RecipesListPresenter implements Presenter, SearchView.OnQueryTextLi
 
     @Override
     public boolean onSuggestionClick(int position) {
-        Log.d("MainActivity", "onSuggestionClick: " + position);
+        view.suggestionClicked(position);
         return true;
     }
 
@@ -131,5 +135,25 @@ public class RecipesListPresenter implements Presenter, SearchView.OnQueryTextLi
         }
 
         view.insertSuggestions(cursor);
+    }
+
+    public void filterRecipesBy(Cursor cursor){
+        long id = cursor.getLong(cursor.getColumnIndex(BaseColumns._ID));
+        String modelName = cursor.getString(cursor.getColumnIndex(Constants.MODEL_NAME_KEY));
+        String suggestion = cursor.getString(cursor.getColumnIndex(Constants.SUGGESTION_RESULT_KEY));
+        if(modelName.equals(Recipe.class.getSimpleName())){
+            List<Recipe> recipes = Recipe.withName(suggestion);
+            view.bindRecipeList(recipes);
+        } else if(modelName.equals(Item.class.getSimpleName())){
+
+        }
+    }
+
+
+    @Override
+    public boolean onClose() {
+        Log.d(TAG, "ON close");
+        view.bindRecipeList(recipes);
+        return false;
     }
 }
