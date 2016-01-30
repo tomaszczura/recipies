@@ -1,5 +1,6 @@
 package com.czura.recipies.views.activities;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
@@ -14,6 +15,8 @@ import com.czura.recipies.injector.modules.ActivityModule;
 import com.czura.recipies.model.entities.Recipe;
 import com.czura.recipies.mvp.presenters.RecipesListPresenter;
 import com.czura.recipies.mvp.views.RecipesListView;
+import com.czura.recipies.utils.Constants;
+import com.czura.recipies.views.RecyclerViewClick;
 import com.czura.recipies.views.adapters.RecipeListAdapter;
 
 import java.util.List;
@@ -23,7 +26,9 @@ import javax.inject.Inject;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 
-public class MainActivity extends AppCompatActivity implements RecipesListView{
+
+//TODO: rotation change
+public class MainActivity extends AppCompatActivity implements RecipesListView {
 
     @Bind(R.id.toolbar)
     Toolbar toolbar;
@@ -53,7 +58,7 @@ public class MainActivity extends AppCompatActivity implements RecipesListView{
     }
 
     private void initializeToolbar() {
-        setSupportActionBar(toolbar);
+        toolbar.setTitle(R.string.app_name);
     }
 
     private void initializeInjector() {
@@ -83,16 +88,23 @@ public class MainActivity extends AppCompatActivity implements RecipesListView{
 
     @Override
     public void bindRecipeList(List<Recipe> recipes) {
-        recipeListAdapter = new RecipeListAdapter(this, recipes);
+        recipeListAdapter = new RecipeListAdapter(this, recipes, onRecipeClick);
         recipesListView.setAdapter(recipeListAdapter);
     }
+
+    private RecyclerViewClick<Recipe> onRecipeClick = new RecyclerViewClick<Recipe>() {
+        @Override
+        public void onItemClicked(Recipe item) {
+            recipesListPresenter.onRecipeClick(item);
+        }
+    };
 
     @Override
     public void showLoading() {
 //        refreshLayout.post(new Runnable() {
 //            @Override
 //            public void run() {
-                refreshLayout.setRefreshing(true);
+        refreshLayout.setRefreshing(true);
 //            }
 //        });
     }
@@ -102,8 +114,15 @@ public class MainActivity extends AppCompatActivity implements RecipesListView{
 //        refreshLayout.post(new Runnable() {
 //            @Override
 //            public void run() {
-                refreshLayout.setRefreshing(false);
+        refreshLayout.setRefreshing(false);
 //            }
 //        });
+    }
+
+    @Override
+    public void showRecipeDetails(Recipe recipe) {
+        Intent intent = new Intent(this, RecipeActivity.class);
+        intent.putExtra(Constants.RECIPE_TAG, recipe);
+        startActivity(intent);
     }
 }

@@ -13,6 +13,7 @@ import android.widget.TextView;
 import com.bumptech.glide.Glide;
 import com.czura.recipies.R;
 import com.czura.recipies.model.entities.Recipe;
+import com.czura.recipies.views.RecyclerViewClick;
 
 import java.util.List;
 
@@ -26,16 +27,18 @@ public class RecipeListAdapter extends RecyclerView.Adapter<RecipeListAdapter.Re
 
     private Context context;
     private final List<Recipe> recipeList;
+    private RecyclerViewClick<Recipe> recyclerViewClick;
 
-    public RecipeListAdapter(Context context, List<Recipe> recipeList) {
+    public RecipeListAdapter(Context context, List<Recipe> recipeList, RecyclerViewClick<Recipe> recyclerViewClick) {
         this.context = context;
         this.recipeList = recipeList;
+        this.recyclerViewClick = recyclerViewClick;
     }
 
     @Override
     public RecipeRowViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View rootView = LayoutInflater.from(context).inflate(R.layout.recipe_row, parent, false);
-        return new RecipeRowViewHolder(rootView);
+        return new RecipeRowViewHolder(rootView, recyclerViewClick);
     }
 
     @Override
@@ -57,13 +60,27 @@ public class RecipeListAdapter extends RecyclerView.Adapter<RecipeListAdapter.Re
 
         @Bind(R.id.recipeDescription)
         TextView recipeDescription;
+        private Recipe recipe;
 
-        public RecipeRowViewHolder(View itemView) {
+        public RecipeRowViewHolder(View itemView, RecyclerViewClick<Recipe> recyclerClickListener) {
             super(itemView);
             ButterKnife.bind(this, itemView);
+            bindListener(itemView, recyclerClickListener);
+        }
+
+        private void bindListener(View itemView, final RecyclerViewClick<Recipe> recyclerClickListener) {
+            itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    recyclerClickListener.onItemClicked(recipe);
+                }
+            });
         }
 
         public void bindRecipe(Recipe recipe){
+            this.recipe = recipe;
+
+            //TODO: check image cache
             if(!TextUtils.isEmpty(recipe.getImageUrl())){
                 Glide.with(context).load(recipe.getImageUrl()).into(recipeImage);
             }

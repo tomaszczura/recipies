@@ -12,4 +12,5 @@ public interface RecipesListView extends View {
     void bindRecipeList(List<Recipe> recipes);
     void showLoading();
     void hideLoading();
+    void showRecipeDetails(Recipe recipe);
 }

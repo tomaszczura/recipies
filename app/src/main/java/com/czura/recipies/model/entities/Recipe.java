@@ -1,5 +1,7 @@
 package com.czura.recipies.model.entities;
 
+import android.os.Parcel;
+import android.os.Parcelable;
 import android.provider.BaseColumns;
 
 import com.activeandroid.Model;
@@ -14,7 +16,7 @@ import java.util.List;
  * Created by Tomasz on 30.01.2016.
  */
 @Table(name = "Recipes", id = BaseColumns._ID)
-public class Recipe extends Model{
+public class Recipe extends Model implements Parcelable{
     @Column(name = "id", unique = true, onUniqueConflict = Column.ConflictAction.REPLACE)
     @SerializedName("id")
     private int id;
@@ -75,4 +77,40 @@ public class Recipe extends Model{
     public static List<Recipe> getAllRecipes(){
         return new Select().from(Recipe.class).execute();
     }
+
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeInt(this.id);
+        dest.writeString(this.title);
+        dest.writeString(this.description);
+        dest.writeTypedList(images);
+        dest.writeTypedList(ingredients);
+    }
+
+    public Recipe() {
+    }
+
+    protected Recipe(Parcel in) {
+        this.id = in.readInt();
+        this.title = in.readString();
+        this.description = in.readString();
+        this.images = in.createTypedArrayList(ImageData.CREATOR);
+        this.ingredients = in.createTypedArrayList(Ingredient.CREATOR);
+    }
+
+    public static final Creator<Recipe> CREATOR = new Creator<Recipe>() {
+        public Recipe createFromParcel(Parcel source) {
+            return new Recipe(source);
+        }
+
+        public Recipe[] newArray(int size) {
+            return new Recipe[size];
+        }
+    };
 }

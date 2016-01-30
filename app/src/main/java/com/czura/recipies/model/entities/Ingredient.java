@@ -1,5 +1,7 @@
 package com.czura.recipies.model.entities;
 
+import android.os.Parcel;
+import android.os.Parcelable;
 import android.provider.BaseColumns;
 
 import com.activeandroid.Model;
@@ -13,7 +15,7 @@ import java.util.List;
  * Created by Tomasz on 30.01.2016.
  */
 @Table(name = "Ingredients", id = BaseColumns._ID)
-public class Ingredient extends Model{
+public class Ingredient extends Model implements Parcelable{
 
     @Column(name = "id", unique = true, onUniqueConflict = Column.ConflictAction.REPLACE)
     @SerializedName("id")
@@ -42,4 +44,34 @@ public class Ingredient extends Model{
             item.save();
         }
     }
+
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeInt(this.id);
+        dest.writeTypedList(items);
+    }
+
+    public Ingredient() {
+    }
+
+    protected Ingredient(Parcel in) {
+        this.id = in.readInt();
+        this.items = in.createTypedArrayList(Item.CREATOR);
+    }
+
+    public static final Creator<Ingredient> CREATOR = new Creator<Ingredient>() {
+        public Ingredient createFromParcel(Parcel source) {
+            return new Ingredient(source);
+        }
+
+        public Ingredient[] newArray(int size) {
+            return new Ingredient[size];
+        }
+    };
 }

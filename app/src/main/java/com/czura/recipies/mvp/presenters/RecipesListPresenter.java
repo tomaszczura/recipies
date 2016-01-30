@@ -1,5 +1,7 @@
 package com.czura.recipies.mvp.presenters;
 
+import android.util.Log;
+
 import com.czura.recipies.model.entities.Recipe;
 import com.czura.recipies.model.rest.RestDataSource;
 import com.czura.recipies.mvp.views.RecipesListView;
@@ -78,4 +80,9 @@ public class RecipesListPresenter implements Presenter {
             view.bindRecipeList(Recipe.getAllRecipes());
         }
     };
+
+    public void onRecipeClick(Recipe recipe){
+        Log.d(TAG, "Recipe: " + recipe.getTitle());
+        view.showRecipeDetails(recipe);
+    }
 }
