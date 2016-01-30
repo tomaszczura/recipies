@@ -1,5 +1,11 @@
 package com.czura.recipies.model.entities;
 
+import android.provider.BaseColumns;
+
+import com.activeandroid.Model;
+import com.activeandroid.annotation.Column;
+import com.activeandroid.annotation.Table;
+import com.activeandroid.query.Select;
 import com.google.gson.annotations.SerializedName;
 
 import java.util.List;
@@ -7,13 +13,17 @@ import java.util.List;
 /**
  * Created by Tomasz on 30.01.2016.
  */
-public class Recipe {
+@Table(name = "Recipes", id = BaseColumns._ID)
+public class Recipe extends Model{
+    @Column(name = "id", unique = true, onUniqueConflict = Column.ConflictAction.REPLACE)
     @SerializedName("id")
     private int id;
 
+    @Column(name = "title")
     @SerializedName("title")
     private String title;
 
+    @Column(name = "description")
     @SerializedName("description")
     private String description;
 
@@ -22,10 +32,6 @@ public class Recipe {
 
     @SerializedName("ingredients")
     private List<Ingredient> ingredients;
-
-    public int getId() {
-        return id;
-    }
 
     public String getTitle() {
         return title;
@@ -37,12 +43,36 @@ public class Recipe {
 
     public String getImageUrl() {
         if(images == null || images.size() == 0){
-            return "";
+            images = getMany(ImageData.class, "recipe");
         }
-        return images.get(0).getImageUrl();
+        if(images.size() > 0){
+            return images.get(0).getImageUrl();
+        }
+        return "";
     }
 
     public List<Ingredient> getIngredients() {
+        if(ingredients == null || ingredients.size() == 0){
+            ingredients = getMany(Ingredient.class, "recipe");
+        }
         return ingredients;
+    }
+
+    public void saveWithRelations(){
+        save();
+
+        for (ImageData imageData : images) {
+            imageData.setRecipe(this);
+            imageData.save();
+        }
+
+        for (Ingredient ingredient : ingredients) {
+            ingredient.setRecipe(this);
+            ingredient.saveWithRelations();
+        }
+    }
+
+    public static List<Recipe> getAllRecipes(){
+        return new Select().from(Recipe.class).execute();
     }
 }

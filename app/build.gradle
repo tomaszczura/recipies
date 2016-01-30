@@ -45,5 +45,6 @@ dependencies {
     compile "org.glassfish:javax.annotation:${libs.javax_annotation}"
 
     compile "com.jakewharton:butterknife:${libs.butterknife}"
-    compile 'com.github.bumptech.glide:glide:3.6.1'
+    compile "com.github.bumptech.glide:glide:${libs.glide}"
+    compile "com.michaelpardo:activeandroid:${libs.activeAndroid}"
 }

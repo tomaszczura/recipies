@@ -4,8 +4,11 @@ import com.czura.recipies.model.entities.Recipe;
 import com.czura.recipies.model.rest.RestDataSource;
 import com.czura.recipies.mvp.views.RecipesListView;
 import com.czura.recipies.mvp.views.View;
+import com.czura.recipies.utils.RecipeSaveTask;
 
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import javax.inject.Inject;
 
@@ -16,9 +19,12 @@ import retrofit2.Response;
  * Created by Tomasz on 30.01.2016.
  */
 public class RecipesListPresenter implements Presenter {
+    private static final String TAG = RecipesListPresenter.class.getSimpleName();
 
     private RestDataSource restApi;
     private RecipesListView view;
+
+    private ExecutorService saveService = Executors.newSingleThreadExecutor();
 
     @Inject
     public RecipesListPresenter(RestDataSource restApi) {
@@ -56,15 +62,20 @@ public class RecipesListPresenter implements Presenter {
     }
 
     private Callback<List<Recipe>> getRecipesCallback = new Callback<List<Recipe>>() {
+
         @Override
         public void onResponse(Response<List<Recipe>> response) {
+            List<Recipe> recipes = response.body();
+            saveService.execute(new RecipeSaveTask(recipes));
+
             view.hideLoading();
-            view.bindRecipeList(response.body());
+            view.bindRecipeList(recipes);
         }
 
         @Override
         public void onFailure(Throwable t) {
             view.hideLoading();
+            view.bindRecipeList(Recipe.getAllRecipes());
         }
     };
 }

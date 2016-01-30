@@ -11,10 +11,13 @@
         android:name=".RecipesApplication"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
+
+        <meta-data android:name="AA_DB_NAME" android:value="recipes.db" />
+        <meta-data android:name="AA_DB_VERSION" android:value="1" />
+
         <activity android:name=".views.activities.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>

@@ -2,6 +2,7 @@ package com.czura.recipies;
 
 import android.app.Application;
 
+import com.activeandroid.ActiveAndroid;
 import com.czura.recipies.injector.AppModule;
 import com.czura.recipies.injector.components.AppComponent;
 import com.czura.recipies.injector.components.DaggerAppComponent;
@@ -15,6 +16,7 @@ public class RecipesApplication extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
+        ActiveAndroid.initialize(this);
         initializeInjector();
     }
 

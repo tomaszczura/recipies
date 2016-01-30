@@ -5,7 +5,9 @@ ext {
             butterknife         : "7.0.1",
             retrofitLogs        : "3.0.0-RC1",
             dagger              : "2.0",
-            javax_annotation    : "10.0-b28"
+            javax_annotation    : "10.0-b28",
+            activeAndroid       : "3.1.0-SNAPSHOT",
+            glide               : "3.6.1"
     ]
 }
 
@@ -24,6 +26,7 @@ buildscript {
 allprojects {
     repositories {
         jcenter()
+        maven { url "https://oss.sonatype.org/content/repositories/snapshots/" }
     }
 }
 
