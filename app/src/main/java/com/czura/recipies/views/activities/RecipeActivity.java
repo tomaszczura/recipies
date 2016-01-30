@@ -15,8 +15,13 @@ import com.czura.recipies.R;
 import com.czura.recipies.RecipesApplication;
 import com.czura.recipies.injector.components.DaggerRecipeActivityComponent;
 import com.czura.recipies.injector.modules.ActivityModule;
+import com.czura.recipies.model.entities.Ingredient;
+import com.czura.recipies.model.entities.Item;
 import com.czura.recipies.model.entities.Recipe;
 import com.czura.recipies.utils.Constants;
+
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -37,6 +42,9 @@ public class RecipeActivity extends AppCompatActivity {
 
     @Bind(R.id.recipeImage)
     ImageView recipeImage;
+
+    @Bind(R.id.ingredients)
+    TextView ingredientsList;
 
     private Recipe recipe;
 
@@ -61,10 +69,33 @@ public class RecipeActivity extends AppCompatActivity {
         toolbar.setTitle(R.string.recipe);
         recipeTitle.setText(recipe.getTitle());
         recipeDescription.setText(Html.fromHtml(recipe.getDescription()));
+
+        StringBuilder builder = new StringBuilder();
+        NumberFormat df = DecimalFormat.getInstance();
+        df.setMinimumFractionDigits(0);
+
+        for (Ingredient ingredient : recipe.getIngredients()) {
+            for (Item item : ingredient.getItems()) {
+                String amount = df.format(item.getAmount());
+
+                builder.append("- ");
+
+                if(!TextUtils.isEmpty(amount) && !amount.equals("0")){
+                    builder.append(amount).append("x ");
+                }
+                builder.append(item.getName())
+                        .append(System.getProperty("line.separator"));
+            }
+        }
+        ingredientsList.setText(builder);
     }
 
     private void initializeToolbar() {
         setSupportActionBar(toolbar);
+
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setDisplayShowHomeEnabled(true);
+
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

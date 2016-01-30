@@ -38,11 +38,13 @@
             <TextView
                 android:text="@string/ingredients"
                 android:textSize="@dimen/recipe_title_size"
-                style="@style/FullWidthText" />
+                style="@style/FullWidthText"
+                android:layout_marginTop="@dimen/recipe_row_margin"/>
 
             <TextView
                 android:id="@+id/ingredients"
                 style="@style/FullWidthText"
+                android:layout_marginTop="@dimen/recipe_row_margin"
                 android:textSize="@dimen/recipe_description_size"/>
 
         </LinearLayout>
