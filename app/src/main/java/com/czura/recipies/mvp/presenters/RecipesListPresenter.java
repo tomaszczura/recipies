@@ -97,13 +97,13 @@ public class RecipesListPresenter implements Presenter, SearchView.OnQueryTextLi
 
     @Override
     public boolean onQueryTextSubmit(String query) {
-        Log.d("MainActivity", "onQueryTextSubmit: " + query);
+        List<Recipe> recipes = Recipe.withName(query);
+        view.bindRecipeList(recipes);
         return false;
     }
 
     @Override
     public boolean onQueryTextChange(String newText) {
-        Log.d("MainActivity", "onQueryTextChange: " + newText);
         prepareSuggestions(newText);
         return false;
     }
@@ -149,10 +149,8 @@ public class RecipesListPresenter implements Presenter, SearchView.OnQueryTextLi
         }
     }
 
-
     @Override
     public boolean onClose() {
-        Log.d(TAG, "ON close");
         view.bindRecipeList(recipes);
         return false;
     }
