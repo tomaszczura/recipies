@@ -7,6 +7,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.view.View;
 
 import com.czura.recipies.R;
 import com.czura.recipies.RecipesApplication;
@@ -38,6 +39,9 @@ public class MainActivity extends AppCompatActivity implements RecipesListView {
 
     @Bind(R.id.refreshRecipesLayout)
     SwipeRefreshLayout refreshLayout;
+
+    @Bind(R.id.progressBarView)
+    View progressBarView;
 
     @Inject
     RecipesListPresenter recipesListPresenter;
@@ -114,6 +118,7 @@ public class MainActivity extends AppCompatActivity implements RecipesListView {
 //        refreshLayout.post(new Runnable() {
 //            @Override
 //            public void run() {
+        progressBarView.setVisibility(View.GONE);
         refreshLayout.setRefreshing(false);
 //            }
 //        });

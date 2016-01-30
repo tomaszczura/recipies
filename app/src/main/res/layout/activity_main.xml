@@ -9,6 +9,22 @@
 
     <include layout="@layout/app_bar_layout" android:id="@+id/toolbarLayout"/>
 
+
+    <RelativeLayout
+        android:id="@+id/progressBarView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <ProgressBar
+
+            android:indeterminate="true"
+            android:layout_centerInParent="true"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+    </RelativeLayout>
+
+
     <android.support.v4.widget.SwipeRefreshLayout
         android:layout_below="@+id/toolbarLayout"
         android:id="@+id/refreshRecipesLayout"
