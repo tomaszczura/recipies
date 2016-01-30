@@ -1,12 +1,18 @@
 package com.czura.recipies.views.activities;
 
+import android.app.SearchManager;
 import android.content.Intent;
+import android.database.Cursor;
 import android.os.Bundle;
+import android.support.v4.widget.CursorAdapter;
+import android.support.v4.widget.SimpleCursorAdapter;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
+import android.view.Menu;
 import android.view.View;
 
 import com.czura.recipies.R;
@@ -47,6 +53,7 @@ public class MainActivity extends AppCompatActivity implements RecipesListView {
     RecipesListPresenter recipesListPresenter;
 
     private RecipeListAdapter recipeListAdapter;
+    private CursorAdapter searchAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -62,6 +69,8 @@ public class MainActivity extends AppCompatActivity implements RecipesListView {
     }
 
     private void initializeToolbar() {
+        setSupportActionBar(toolbar);
+
         toolbar.setTitle(R.string.app_name);
     }
 
@@ -104,24 +113,35 @@ public class MainActivity extends AppCompatActivity implements RecipesListView {
     };
 
     @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.search_menu, menu);
+        initSearch(menu);
+        return true;
+    }
+
+    private void initSearch(Menu menu) {
+        SearchManager searchManager = (SearchManager) getSystemService(SEARCH_SERVICE);
+        SearchView searchView = (SearchView) menu.findItem(R.id.menu_search).getActionView();
+        searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
+
+        //TODO: create selector
+        searchAdapter = new SimpleCursorAdapter(this, R.layout.query_suggestion,
+                null, new String[]{Constants.SUGGESTION_RESULT_KEY}, new int[]{android.R.id.text1}, 0);
+
+        searchView.setSuggestionsAdapter(searchAdapter);
+        searchView.setOnSuggestionListener(recipesListPresenter);
+        searchView.setOnQueryTextListener(recipesListPresenter);
+    }
+
+    @Override
     public void showLoading() {
-//        refreshLayout.post(new Runnable() {
-//            @Override
-//            public void run() {
         refreshLayout.setRefreshing(true);
-//            }
-//        });
     }
 
     @Override
     public void hideLoading() {
-//        refreshLayout.post(new Runnable() {
-//            @Override
-//            public void run() {
         progressBarView.setVisibility(View.GONE);
         refreshLayout.setRefreshing(false);
-//            }
-//        });
     }
 
     @Override
@@ -129,5 +149,10 @@ public class MainActivity extends AppCompatActivity implements RecipesListView {
         Intent intent = new Intent(this, RecipeActivity.class);
         intent.putExtra(Constants.RECIPE_TAG, recipe);
         startActivity(intent);
+    }
+
+    @Override
+    public void insertSuggestions(Cursor cursor) {
+        searchAdapter.changeCursor(cursor);
     }
 }

@@ -54,6 +54,8 @@ public class Recipe extends Model implements Parcelable{
     }
 
     public List<Ingredient> getIngredients() {
+
+        //TODO: offline mode - crash!
         if(ingredients == null || ingredients.size() == 0){
             ingredients = getMany(Ingredient.class, "recipe");
         }
@@ -113,4 +115,8 @@ public class Recipe extends Model implements Parcelable{
             return new Recipe[size];
         }
     };
+
+    public static List<Recipe> withName(String name){
+        return new Select().from(Recipe.class).where("title LIKE '%" + name + "%'").execute();
+    }
 }

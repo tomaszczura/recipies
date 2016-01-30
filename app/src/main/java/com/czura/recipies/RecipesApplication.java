@@ -16,7 +16,7 @@ public class RecipesApplication extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
-        ActiveAndroid.initialize(this);
+        ActiveAndroid.initialize(this, true);
         initializeInjector();
     }
 

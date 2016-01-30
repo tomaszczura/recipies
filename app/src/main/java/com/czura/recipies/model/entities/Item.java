@@ -7,7 +7,10 @@ import android.provider.BaseColumns;
 import com.activeandroid.Model;
 import com.activeandroid.annotation.Column;
 import com.activeandroid.annotation.Table;
+import com.activeandroid.query.Select;
 import com.google.gson.annotations.SerializedName;
+
+import java.util.List;
 
 /**
  * Created by Tomasz on 30.01.2016.
@@ -73,4 +76,8 @@ public class Item extends Model implements Parcelable{
             return new Item[size];
         }
     };
+
+    public static List<Item> withName(String name){
+        return new Select().from(Item.class).where("title LIKE '%" + name + "%'").execute();
+    }
 }
