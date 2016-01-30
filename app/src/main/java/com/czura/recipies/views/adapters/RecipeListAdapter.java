@@ -65,9 +65,8 @@ public class RecipeListAdapter extends RecyclerView.Adapter<RecipeListAdapter.Re
 
         public void bindRecipe(Recipe recipe){
             if(!TextUtils.isEmpty(recipe.getImageUrl())){
-                Glide.with(this).load(recipe.getImageUrl()).into(recipeImage);
+                Glide.with(context).load(recipe.getImageUrl()).into(recipeImage);
             }
-
 
             recipeTitle.setText(recipe.getTitle());
             recipeDescription.setText(Html.fromHtml(recipe.getDescription()));

@@ -52,7 +52,6 @@ public class MainActivity extends AppCompatActivity implements RecipesListView{
         initializeRecyclerView();
     }
 
-
     private void initializeToolbar() {
         setSupportActionBar(toolbar);
     }
@@ -73,6 +72,13 @@ public class MainActivity extends AppCompatActivity implements RecipesListView{
 
     private void initializeRecyclerView() {
         recipesListView.setLayoutManager(new LinearLayoutManager(this));
+        refreshLayout.setColorSchemeResources(R.color.colorAccent, R.color.colorPrimary, R.color.colorPrimaryDark);
+        refreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                recipesListPresenter.downloadRecipes();
+            }
+        });
     }
 
     @Override
@@ -83,21 +89,21 @@ public class MainActivity extends AppCompatActivity implements RecipesListView{
 
     @Override
     public void showLoading() {
-        refreshLayout.post(new Runnable() {
-            @Override
-            public void run() {
+//        refreshLayout.post(new Runnable() {
+//            @Override
+//            public void run() {
                 refreshLayout.setRefreshing(true);
-            }
-        });
+//            }
+//        });
     }
 
     @Override
     public void hideLoading() {
-        refreshLayout.post(new Runnable() {
-            @Override
-            public void run() {
+//        refreshLayout.post(new Runnable() {
+//            @Override
+//            public void run() {
                 refreshLayout.setRefreshing(false);
-            }
-        });
+//            }
+//        });
     }
 }

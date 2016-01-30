@@ -47,6 +47,10 @@ public class RecipesListPresenter implements Presenter {
 
     @Override
     public void onCreate() {
+        downloadRecipes();
+    }
+
+    public void downloadRecipes() {
         view.showLoading();
         restApi.getRecipes().enqueue(getRecipesCallback);
     }
