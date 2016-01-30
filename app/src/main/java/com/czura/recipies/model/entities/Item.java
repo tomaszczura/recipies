@@ -17,6 +17,8 @@ import java.util.List;
  */
 @Table(name = "Items", id = BaseColumns._ID)
 public class Item extends Model implements Parcelable{
+    public static final String TABLE_NAME = "Items";
+    public static final String ID = "_id";
 
     @Column(name = "id", unique = true, onUniqueConflict = Column.ConflictAction.REPLACE)
     @SerializedName("id")
@@ -30,9 +32,6 @@ public class Item extends Model implements Parcelable{
     @SerializedName("name")
     private String name;
 
-    @Column(name = "ingredient", onDelete = Column.ForeignKeyAction.CASCADE)
-    private Ingredient ingredient;
-
     public double getAmount() {
         return amount;
     }
@@ -40,11 +39,6 @@ public class Item extends Model implements Parcelable{
     public String getName() {
         return name;
     }
-
-    public void setIngredient(Ingredient ingredient) {
-        this.ingredient = ingredient;
-    }
-
 
     @Override
     public int describeContents() {
@@ -78,6 +72,6 @@ public class Item extends Model implements Parcelable{
     };
 
     public static List<Item> withName(String name){
-        return new Select().from(Item.class).where("title LIKE '%" + name + "%'").execute();
+        return new Select().from(Item.class).where("name LIKE '%" + name + "%'").execute();
     }
 }

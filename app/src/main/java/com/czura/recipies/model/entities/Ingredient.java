@@ -7,6 +7,7 @@ import android.provider.BaseColumns;
 import com.activeandroid.Model;
 import com.activeandroid.annotation.Column;
 import com.activeandroid.annotation.Table;
+import com.activeandroid.query.Select;
 import com.google.gson.annotations.SerializedName;
 
 import java.util.List;
@@ -29,7 +30,9 @@ public class Ingredient extends Model implements Parcelable{
 
     public List<Item> getItems() {
         if(items == null || items.size() == 0){
-            items = getMany(Item.class, "ingredient");
+            items = new Select().from(Item.class).innerJoin(IngredientItem.class)
+                    .on(Item.TABLE_NAME + "." + Item.ID + " = " + IngredientItem.TABLE_NAME + "." + IngredientItem.ITEM_COLUMN)
+                    .where(IngredientItem.TABLE_NAME + "." + IngredientItem.INGREDIENT_COLUMN + " = ?", getId()).execute();
         }
         return items;
     }
@@ -39,12 +42,13 @@ public class Ingredient extends Model implements Parcelable{
     }
 
     public void saveWithRelations(){
+        save();
         for (Item item : items) {
-            item.setIngredient(this);
             item.save();
+            IngredientItem ingredientItem = new IngredientItem(this, item);
+            ingredientItem.save();
         }
     }
-
 
     @Override
     public int describeContents() {
