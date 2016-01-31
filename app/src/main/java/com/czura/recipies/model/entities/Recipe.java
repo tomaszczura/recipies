@@ -148,15 +148,28 @@ public class Recipe extends Model implements Parcelable{
     }
 
     public static List<Recipe> getRecipesWithIngredients(List<Ingredient> ingredients){
-        List<Long> ids = new ArrayList<>();
-        for (Ingredient ingredient : ingredients) {
-            ids.add(ingredient.getId());
-        }
-        String joined = TextUtils.join(",", ids);
+        String joined = prepareIngredientIds(ingredients);
 
         return new Select(allColumns()).distinct().from(Recipe.class).innerJoin(Ingredient.class)
                 .on(Recipe.TABLE_NAME + "." + Recipe.ID + " = " + Ingredient.TABLE_NAME + "." + Ingredient.RECIPE_KEY)
                 .where(Ingredient.TABLE_NAME + "." + Ingredient.ID + " in (" + joined + ")").execute();
+    }
+
+    public static List<Recipe> getRecipesWithIngredientsOrName(List<Ingredient> ingredients, String name){
+        String joined = prepareIngredientIds(ingredients);
+
+        return new Select(allColumns()).distinct().from(Recipe.class).innerJoin(Ingredient.class)
+                .on(Recipe.TABLE_NAME + "." + Recipe.ID + " = " + Ingredient.TABLE_NAME + "." + Ingredient.RECIPE_KEY)
+                .where(Ingredient.TABLE_NAME + "." + Ingredient.ID + " in (" + joined + ") OR " +
+                        Recipe.TABLE_NAME + "." + Recipe.TITLE + " LIKE '%" + name + "%'").execute();
+    }
+
+    private static String prepareIngredientIds(List<Ingredient> ingredients) {
+        List<Long> ids = new ArrayList<>();
+        for (Ingredient ingredient : ingredients) {
+            ids.add(ingredient.getId());
+        }
+        return TextUtils.join(",", ids);
     }
 
     private static String allColumns(){

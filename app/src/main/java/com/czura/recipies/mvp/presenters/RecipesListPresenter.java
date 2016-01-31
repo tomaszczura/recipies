@@ -98,7 +98,10 @@ public class RecipesListPresenter implements Presenter, SearchView.OnQueryTextLi
 
     @Override
     public boolean onQueryTextSubmit(String query) {
-        List<Recipe> recipes = Recipe.withName(query);
+        List<Item> items = Item.withName(query);
+
+        List<Ingredient> ingredientsWithItems = Ingredient.getIngredientsWithItems(items);
+        List<Recipe> recipes = Recipe.getRecipesWithIngredientsOrName(ingredientsWithItems, query);
         view.bindRecipeList(recipes);
         return false;
     }
