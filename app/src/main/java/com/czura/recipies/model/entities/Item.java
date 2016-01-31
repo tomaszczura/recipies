@@ -19,6 +19,7 @@ import java.util.List;
 public class Item extends Model implements Parcelable{
     public static final String TABLE_NAME = "Items";
     public static final String ID = "_id";
+    public static final String NAME = "name";
 
     @Column(name = "id", unique = true, onUniqueConflict = Column.ConflictAction.REPLACE)
     @SerializedName("id")
@@ -28,7 +29,7 @@ public class Item extends Model implements Parcelable{
     @SerializedName("amount")
     private double amount;
 
-    @Column(name = "name")
+    @Column(name = NAME)
     @SerializedName("name")
     private String name;
 
@@ -76,7 +77,8 @@ public class Item extends Model implements Parcelable{
     };
 
     public static List<Item> withName(String name){
-        return new Select().from(Item.class).where("name LIKE '%" + name + "%'").execute();
+        return new Select().from(Item.class).where(Item.NAME + " LIKE '%" + name + "%'")
+                .orderBy(Item.NAME).execute();
     }
 
     public static List<Item> hasName(String name){

@@ -5,7 +5,6 @@ import android.database.MatrixCursor;
 import android.os.Bundle;
 import android.provider.BaseColumns;
 import android.support.v7.widget.SearchView;
-import android.util.Log;
 
 import com.czura.recipies.model.entities.Ingredient;
 import com.czura.recipies.model.entities.Item;
@@ -86,7 +85,6 @@ public class RecipesListPresenter implements Presenter, SearchView.OnQueryTextLi
     }
 
     public void downloadRecipes() {
-        Log.d(TAG, "Download recipes");
         view.showLoading();
         if(apiCall != null){
             apiCall.cancel();
@@ -119,7 +117,6 @@ public class RecipesListPresenter implements Presenter, SearchView.OnQueryTextLi
     }
 
     public void onRecipeClick(Recipe recipe){
-        Log.d(TAG, "Recipe: " + recipe.getTitle());
         view.showRecipeDetails(recipe);
     }
 
@@ -141,7 +138,6 @@ public class RecipesListPresenter implements Presenter, SearchView.OnQueryTextLi
 
     @Override
     public boolean onSuggestionSelect(int position) {
-        Log.d("MainActivity", "onSuggestionSelect: " + position);
         return true;
     }
 
@@ -172,7 +168,6 @@ public class RecipesListPresenter implements Presenter, SearchView.OnQueryTextLi
     }
 
     public void filterRecipesBy(Cursor cursor){
-        long id = cursor.getLong(cursor.getColumnIndex(BaseColumns._ID));
         String modelName = cursor.getString(cursor.getColumnIndex(Constants.MODEL_NAME_KEY));
         String suggestion = cursor.getString(cursor.getColumnIndex(Constants.SUGGESTION_RESULT_KEY));
         if(modelName.equals(Recipe.class.getSimpleName())){
@@ -192,6 +187,7 @@ public class RecipesListPresenter implements Presenter, SearchView.OnQueryTextLi
 
     @Override
     public boolean onClose() {
+        recipes = Recipe.getAllRecipes();
         view.bindRecipeList(recipes);
         return false;
     }

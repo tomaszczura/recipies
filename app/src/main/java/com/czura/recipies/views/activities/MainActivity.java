@@ -108,7 +108,6 @@ public class MainActivity extends AppCompatActivity implements RecipesListView {
         recipesListPresenter.onStop();
     }
 
-
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);

@@ -89,7 +89,6 @@ public class RecipeListAdapter extends RecyclerView.Adapter<RecipeListAdapter.Re
         public void bindRecipe(Recipe recipe){
             this.recipe = recipe;
 
-            //TODO: check image cache
             if(!TextUtils.isEmpty(recipe.getImageUrl())){
                 Glide.with(context).load(recipe.getImageUrl()).into(recipeImage);
             }

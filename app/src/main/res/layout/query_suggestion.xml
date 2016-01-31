@@ -7,7 +7,7 @@
     android:maxLines="1"
     android:textAppearance="?android:attr/textAppearanceListItemSmall"
     android:gravity="center_vertical"
-    android:background="@android:color/white"
+    android:background="@drawable/search_selector"
     android:textColor="@android:color/black"
     android:paddingLeft="@dimen/activity_vertical_margin"
     android:paddingRight="@dimen/activity_vertical_margin"

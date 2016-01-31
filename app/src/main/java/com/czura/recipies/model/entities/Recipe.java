@@ -4,7 +4,6 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import android.provider.BaseColumns;
 import android.text.TextUtils;
-import android.util.Log;
 
 import com.activeandroid.Model;
 import com.activeandroid.annotation.Column;
@@ -79,13 +78,6 @@ public class Recipe extends Model implements Parcelable{
             imageData.save();
         }
 
-        if(id == 7306 || title.equals("Hjemmelaget ricotta")){
-            Log.d("Recipe", "INGREDIENTS: " + ingredients);
-            if(ingredients != null){
-                Log.d("Recipe", "INGREDIENTS: " + ingredients.size());
-            }
-        }
-
         for (Ingredient ingredient : ingredients) {
             ingredient.setRecipe(this);
             ingredient.saveWithRelations();
@@ -132,7 +124,8 @@ public class Recipe extends Model implements Parcelable{
     };
 
     public static List<Recipe> withName(String name){
-        return new Select().from(Recipe.class).where("title LIKE '%" + name + "%'").execute();
+        return new Select().from(Recipe.class).where(Recipe.TITLE + " LIKE '%" + name + "%'")
+                .orderBy(Recipe.TITLE).execute();
     }
 
     public static List<Recipe> hasName(String name){
