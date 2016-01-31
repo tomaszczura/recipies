@@ -1,4 +1,4 @@
-# Recipies
+# Recipes
 The app shows a list of the first 50 recipes in the godt [api](http://www.godt.no/api/getRecipesListDetailed?tags=&size=thumbnail-medium&ratio=1&limit=50&from=0), containing title, image, description and ingredient names.
 App can also work offline (of course, when you run it at least once with network connection).
 User can search recipe by it's title or any ingredient it contains.
