@@ -6,6 +6,7 @@ import android.provider.BaseColumns;
 import android.support.v7.widget.SearchView;
 import android.util.Log;
 
+import com.czura.recipies.model.entities.Ingredient;
 import com.czura.recipies.model.entities.Item;
 import com.czura.recipies.model.entities.Recipe;
 import com.czura.recipies.model.rest.RestDataSource;
@@ -126,12 +127,15 @@ public class RecipesListPresenter implements Presenter, SearchView.OnQueryTextLi
         List<Recipe> recipes = Recipe.withName(query);
         List<Item> items = Item.withName(query);
 
+        long id = 0;
         for (Recipe recipe : recipes) {
-            cursor.addRow(new Object[] {recipe.getId(), Recipe.class.getSimpleName(), recipe.getTitle()});
+            cursor.addRow(new Object[] {id, Recipe.class.getSimpleName(), recipe.getTitle()});
+            id++;
         }
 
         for (Item item : items) {
-            cursor.addRow(new Object[] {item.getId(), Item.class.getSimpleName(), item.getName()});
+            cursor.addRow(new Object[] {id, Item.class.getSimpleName(), item.getName()});
+            id++;
         }
 
         view.insertSuggestions(cursor);
@@ -142,11 +146,18 @@ public class RecipesListPresenter implements Presenter, SearchView.OnQueryTextLi
         String modelName = cursor.getString(cursor.getColumnIndex(Constants.MODEL_NAME_KEY));
         String suggestion = cursor.getString(cursor.getColumnIndex(Constants.SUGGESTION_RESULT_KEY));
         if(modelName.equals(Recipe.class.getSimpleName())){
-            List<Recipe> recipes = Recipe.withName(suggestion);
+            List<Recipe> recipes = Recipe.hasName(suggestion);
             view.bindRecipeList(recipes);
         } else if(modelName.equals(Item.class.getSimpleName())){
-
+            List<Recipe> recipes = getRecipesWithItemOfName(suggestion);
+            view.bindRecipeList(recipes);
         }
+    }
+
+    private List<Recipe> getRecipesWithItemOfName(String suggestion) {
+        List<Item> items = Item.hasName(suggestion);
+        List<Ingredient> ingredientsWithItems = Ingredient.getIngredientsWithItems(items);
+        return Recipe.getRecipesWithIngredients(ingredientsWithItems);
     }
 
     @Override

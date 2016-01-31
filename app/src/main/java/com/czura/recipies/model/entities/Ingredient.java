@@ -3,6 +3,7 @@ package com.czura.recipies.model.entities;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.provider.BaseColumns;
+import android.text.TextUtils;
 
 import com.activeandroid.Model;
 import com.activeandroid.annotation.Column;
@@ -10,6 +11,7 @@ import com.activeandroid.annotation.Table;
 import com.activeandroid.query.Select;
 import com.google.gson.annotations.SerializedName;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -45,14 +47,14 @@ public class Ingredient extends Model implements Parcelable{
     }
 
     public void saveWithRelations(){
-//        if(id == 0){
-//            Ingredient ing = new Select(BaseColumns._ID).from(Ingredient.class).orderBy(BaseColumns._ID).limit(1).executeSingle();
-//            id = (int) (ing.getId() + 1);
-//        }
         save();
         for (Item item : items) {
-            item.save();
-            IngredientItem ingredientItem = new IngredientItem(this, item);
+            Item saved = Item.getItemOfExternalId(item.getExternalId());
+            if(saved == null){
+                item.save();
+                saved = item;
+            }
+            IngredientItem ingredientItem = new IngredientItem(this, saved);
             ingredientItem.save();
         }
     }
@@ -64,7 +66,6 @@ public class Ingredient extends Model implements Parcelable{
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
-//        dest.writeInt(this.id);
         dest.writeTypedList(items);
     }
 
@@ -72,7 +73,6 @@ public class Ingredient extends Model implements Parcelable{
     }
 
     protected Ingredient(Parcel in) {
-//        this.id = in.readInt();
         this.items = in.createTypedArrayList(Item.CREATOR);
     }
 
@@ -88,5 +88,17 @@ public class Ingredient extends Model implements Parcelable{
 
     public static List<Ingredient> getIngredientsOfRecipe(long id){
         return new Select().from(Ingredient.class).where(RECIPE_KEY + " = ?", id).execute();
+    }
+
+    public static List<Ingredient> getIngredientsWithItems(List<Item> items){
+        List<Long> ids = new ArrayList<>();
+        for (Item item : items) {
+            ids.add(item.getId());
+        }
+        String joined = TextUtils.join(",", ids);
+
+        return new Select().from(Ingredient.class).innerJoin(IngredientItem.class)
+                .on(Ingredient.TABLE_NAME + "." + Ingredient.ID + " = " + IngredientItem.TABLE_NAME + "." + IngredientItem.INGREDIENT_COLUMN)
+                .where(IngredientItem.TABLE_NAME + "." + IngredientItem.ITEM_COLUMN + " in (" + joined + ")").execute();
     }
 }

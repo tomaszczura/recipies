@@ -3,6 +3,7 @@ package com.czura.recipies.model.entities;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.provider.BaseColumns;
+import android.text.TextUtils;
 import android.util.Log;
 
 import com.activeandroid.Model;
@@ -12,6 +13,7 @@ import com.activeandroid.query.Delete;
 import com.activeandroid.query.Select;
 import com.google.gson.annotations.SerializedName;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -21,16 +23,18 @@ import java.util.List;
 public class Recipe extends Model implements Parcelable{
     public static final String TABLE_NAME = "Recipes";
     public static final String ID = "_id";
+    public static final String DESCRIPTION = "description";
+    public static final String TITLE = "title";
 
     @Column(name = "id", unique = true, onUniqueConflict = Column.ConflictAction.REPLACE)
     @SerializedName("id")
     private int id;
 
-    @Column(name = "title")
+    @Column(name = TITLE)
     @SerializedName("title")
     private String title;
 
-    @Column(name = "description")
+    @Column(name = DESCRIPTION)
     @SerializedName("description")
     private String description;
 
@@ -131,11 +135,34 @@ public class Recipe extends Model implements Parcelable{
         return new Select().from(Recipe.class).where("title LIKE '%" + name + "%'").execute();
     }
 
+    public static List<Recipe> hasName(String name){
+        return new Select().from(Recipe.class).where("title = ?", name).execute();
+    }
+
     public static void deleteAll(){
         new Delete().from(Recipe.class).execute();
     }
 
     public static Recipe getRecipeOfId(Long id){
         return new Select().from(Recipe.class).where(BaseColumns._ID + " = ?", id).executeSingle();
+    }
+
+    public static List<Recipe> getRecipesWithIngredients(List<Ingredient> ingredients){
+        List<Long> ids = new ArrayList<>();
+        for (Ingredient ingredient : ingredients) {
+            ids.add(ingredient.getId());
+        }
+        String joined = TextUtils.join(",", ids);
+
+        return new Select(allColumns()).distinct().from(Recipe.class).innerJoin(Ingredient.class)
+                .on(Recipe.TABLE_NAME + "." + Recipe.ID + " = " + Ingredient.TABLE_NAME + "." + Ingredient.RECIPE_KEY)
+                .where(Ingredient.TABLE_NAME + "." + Ingredient.ID + " in (" + joined + ")").execute();
+    }
+
+    private static String allColumns(){
+        return Recipe.TABLE_NAME + "." + Recipe.ID  + ", " +
+        Recipe.TABLE_NAME + ".id, " +
+        Recipe.TABLE_NAME + "." + Recipe.TITLE  + ", " +
+        Recipe.TABLE_NAME + "." + Recipe.DESCRIPTION;
     }
 }

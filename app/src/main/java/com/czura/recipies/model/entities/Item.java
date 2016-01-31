@@ -61,6 +61,10 @@ public class Item extends Model implements Parcelable{
         this.name = in.readString();
     }
 
+    public int getExternalId() {
+        return id;
+    }
+
     public static final Creator<Item> CREATOR = new Creator<Item>() {
         public Item createFromParcel(Parcel source) {
             return new Item(source);
@@ -73,5 +77,13 @@ public class Item extends Model implements Parcelable{
 
     public static List<Item> withName(String name){
         return new Select().from(Item.class).where("name LIKE '%" + name + "%'").execute();
+    }
+
+    public static List<Item> hasName(String name){
+        return new Select().from(Item.class).where("name = '" + name + "'").execute();
+    }
+
+    public static Item getItemOfExternalId(int extId){
+        return new Select().from(Item.class).where("id = ?", extId).executeSingle();
     }
 }
