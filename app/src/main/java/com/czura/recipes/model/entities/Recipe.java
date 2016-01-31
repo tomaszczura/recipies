@@ -63,7 +63,6 @@ public class Recipe extends Model implements Parcelable{
 
     public List<Ingredient> getIngredients() {
 
-        //TODO: offline mode - crash!
         if(ingredients == null || ingredients.size() == 0){
             ingredients = Ingredient.getIngredientsOfRecipe(getId());
         }

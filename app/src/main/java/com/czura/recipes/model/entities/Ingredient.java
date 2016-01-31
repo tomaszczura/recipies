@@ -23,10 +23,6 @@ public class Ingredient extends Model implements Parcelable{
     public static final String ID = "_id";
     public static final String RECIPE_KEY = "recipe";
 
-//    @Column(name = "id", unique = true, onUniqueConflict = Column.ConflictAction.REPLACE)
-//    @SerializedName("id")
-//    private int id;
-
     @SerializedName("elements")
     private List<Item> items;
 

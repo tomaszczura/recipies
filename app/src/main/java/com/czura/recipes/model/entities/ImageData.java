@@ -21,20 +21,12 @@ public class ImageData extends Model implements Parcelable{
     public static final String ID = "_id";
     public static final String RECIPE_KEY = "recipe";
 
-//    @Column(name = "id", unique = true, onUniqueConflict = Column.ConflictAction.REPLACE)
-//    @SerializedName("imboId")
-//    private String imageId;
-
     @Column(name = "url")
     @SerializedName("url")
     private String imageUrl;
 
     @Column(name = "recipe", onDelete = Column.ForeignKeyAction.CASCADE)
     private Recipe recipe;
-//
-//    public String getImageId() {
-//        return imageId;
-//    }
 
     public String getImageUrl() {
         return imageUrl;
@@ -51,7 +43,6 @@ public class ImageData extends Model implements Parcelable{
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
-//        dest.writeString(this.imageId);
         dest.writeString(this.imageUrl);
     }
 
@@ -59,7 +50,6 @@ public class ImageData extends Model implements Parcelable{
     }
 
     protected ImageData(Parcel in) {
-//        this.imageId = in.readString();
         this.imageUrl = in.readString();
     }
 

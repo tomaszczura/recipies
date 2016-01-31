@@ -140,7 +140,6 @@ public class MainActivity extends AppCompatActivity implements RecipesListView {
         SearchView searchView = (SearchView) menu.findItem(R.id.menu_search).getActionView();
         searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
 
-        //TODO: create selector
         searchAdapter = new SimpleCursorAdapter(this, R.layout.query_suggestion,
                 null, new String[]{Constants.SUGGESTION_RESULT_KEY}, new int[]{android.R.id.text1}, 0);
 
