@@ -5,6 +5,8 @@
  */
 package com.czura.recipies.mvp.presenters;
 
+import android.os.Bundle;
+
 import com.czura.recipies.mvp.views.View;
 
 public interface Presenter {
@@ -16,5 +18,5 @@ public interface Presenter {
 
     void attachView(View v);
 
-    void onCreate();
+    void onCreate(Bundle savedInstanceState);
 }

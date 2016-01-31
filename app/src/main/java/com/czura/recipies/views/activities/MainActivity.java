@@ -28,6 +28,7 @@ import com.czura.recipies.utils.Constants;
 import com.czura.recipies.views.RecyclerViewClick;
 import com.czura.recipies.views.adapters.RecipeListAdapter;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -65,9 +66,9 @@ public class MainActivity extends AppCompatActivity implements RecipesListView {
         ButterKnife.bind(this);
 
         initializeToolbar();
-        initializeInjector();
-        initializePresenter();
         initializeRecyclerView();
+        initializeInjector();
+        initializePresenter(savedInstanceState);
     }
 
     private void initializeToolbar() {
@@ -85,9 +86,9 @@ public class MainActivity extends AppCompatActivity implements RecipesListView {
                 .build().inject(this);
     }
 
-    private void initializePresenter() {
+    private void initializePresenter(Bundle savedInstanceState) {
         recipesListPresenter.attachView(this);
-        recipesListPresenter.onCreate();
+        recipesListPresenter.onCreate(savedInstanceState);
     }
 
     private void initializeRecyclerView() {
@@ -99,6 +100,22 @@ public class MainActivity extends AppCompatActivity implements RecipesListView {
                 recipesListPresenter.downloadRecipes();
             }
         });
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        recipesListPresenter.onStop();
+    }
+
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        if(recipeListAdapter != null){
+            ArrayList<Long> recipesIds = recipeListAdapter.getRecipesIds();
+            recipesListPresenter.saveDisplayedRecipes(recipesIds, outState);
+        }
     }
 
     @Override

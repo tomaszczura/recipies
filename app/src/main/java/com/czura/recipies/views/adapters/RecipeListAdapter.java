@@ -15,6 +15,7 @@ import com.czura.recipies.R;
 import com.czura.recipies.model.entities.Recipe;
 import com.czura.recipies.views.RecyclerViewClick;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.Bind;
@@ -49,6 +50,14 @@ public class RecipeListAdapter extends RecyclerView.Adapter<RecipeListAdapter.Re
     @Override
     public int getItemCount() {
         return recipeList.size();
+    }
+
+    public ArrayList<Long> getRecipesIds(){
+        ArrayList<Long> recipeIds = new ArrayList<>();
+        for (Recipe recipe : recipeList) {
+            recipeIds.add(recipe.getId());
+        }
+        return recipeIds;
     }
 
     class RecipeRowViewHolder extends RecyclerView.ViewHolder {

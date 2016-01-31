@@ -2,6 +2,7 @@ package com.czura.recipies.mvp.presenters;
 
 import android.database.Cursor;
 import android.database.MatrixCursor;
+import android.os.Bundle;
 import android.provider.BaseColumns;
 import android.support.v7.widget.SearchView;
 import android.util.Log;
@@ -15,12 +16,14 @@ import com.czura.recipies.mvp.views.View;
 import com.czura.recipies.utils.Constants;
 import com.czura.recipies.utils.RecipeSaveTask;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import javax.inject.Inject;
 
+import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
@@ -36,6 +39,7 @@ public class RecipesListPresenter implements Presenter, SearchView.OnQueryTextLi
     private ExecutorService saveService = Executors.newSingleThreadExecutor();
 
     private List<Recipe> recipes;
+    private Call apiCall;
 
     @Inject
     public RecipesListPresenter(RestDataSource restApi) {
@@ -49,12 +53,14 @@ public class RecipesListPresenter implements Presenter, SearchView.OnQueryTextLi
 
     @Override
     public void onStop() {
-
+        if(apiCall != null){
+            apiCall.cancel();
+        }
     }
 
     @Override
     public void onPause() {
-        //TODO: pause call
+
     }
 
     @Override
@@ -63,13 +69,30 @@ public class RecipesListPresenter implements Presenter, SearchView.OnQueryTextLi
     }
 
     @Override
-    public void onCreate() {
+    public void onCreate(Bundle savedInstanceState) {
+        if(savedInstanceState != null){
+            List<Long> recipesIds = (List<Long>) savedInstanceState.getSerializable(Constants.RECIPE_IDS);
+            if(recipesIds != null && recipesIds.size() > 0){
+                recipes = Recipe.getRecipesOfIds(recipesIds);
+                insertRecipesList();
+                return;
+            }
+        }
         downloadRecipes();
     }
 
+    public void saveDisplayedRecipes(ArrayList<Long> recipesIds, Bundle outState){
+        outState.putSerializable(Constants.RECIPE_IDS, recipesIds);
+    }
+
     public void downloadRecipes() {
+        Log.d(TAG, "Download recipes");
         view.showLoading();
-        restApi.getRecipes().enqueue(getRecipesCallback);
+        if(apiCall != null){
+            apiCall.cancel();
+        }
+        apiCall = restApi.getRecipes();
+        apiCall.enqueue(getRecipesCallback);
     }
 
     private Callback<List<Recipe>> getRecipesCallback = new Callback<List<Recipe>>() {
@@ -79,17 +102,21 @@ public class RecipesListPresenter implements Presenter, SearchView.OnQueryTextLi
             recipes = response.body();
             saveService.execute(new RecipeSaveTask(recipes));
 
-            view.hideLoading();
-            view.bindRecipeList(recipes);
+            insertRecipesList();
         }
 
         @Override
         public void onFailure(Throwable t) {
-            view.hideLoading();
             recipes = Recipe.getAllRecipes();
-            view.bindRecipeList(recipes);
+
+            insertRecipesList();
         }
     };
+
+    private void insertRecipesList() {
+        view.hideLoading();
+        view.bindRecipeList(recipes);
+    }
 
     public void onRecipeClick(Recipe recipe){
         Log.d(TAG, "Recipe: " + recipe.getTitle());

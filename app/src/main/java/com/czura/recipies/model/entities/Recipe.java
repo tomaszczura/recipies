@@ -147,6 +147,11 @@ public class Recipe extends Model implements Parcelable{
         return new Select().from(Recipe.class).where(BaseColumns._ID + " = ?", id).executeSingle();
     }
 
+    public static List<Recipe> getRecipesOfIds(List<Long> ids){
+        String joined = TextUtils.join(",", ids);
+        return new Select().from(Recipe.class).where(BaseColumns._ID + " in (" + joined + ")").execute();
+    }
+
     public static List<Recipe> getRecipesWithIngredients(List<Ingredient> ingredients){
         String joined = prepareIngredientIds(ingredients);
 
