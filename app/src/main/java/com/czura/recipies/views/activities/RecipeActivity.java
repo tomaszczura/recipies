@@ -57,8 +57,11 @@ public class RecipeActivity extends AppCompatActivity {
         initializeToolbar();
         initializeInjector();
 
-        recipe = getIntent().getParcelableExtra(Constants.RECIPE_TAG);
-        fillRecipeData();
+        Long recipeId = getIntent().getLongExtra(Constants.RECIPE_TAG, -1);
+        if(recipeId != -1){
+            recipe = Recipe.getRecipeOfId(recipeId);
+            fillRecipeData();
+        }
     }
 
     private void fillRecipeData() {

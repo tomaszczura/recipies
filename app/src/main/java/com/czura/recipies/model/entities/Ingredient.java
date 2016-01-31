@@ -17,10 +17,13 @@ import java.util.List;
  */
 @Table(name = "Ingredients", id = BaseColumns._ID)
 public class Ingredient extends Model implements Parcelable{
+    public static final String TABLE_NAME = "Ingredients";
+    public static final String ID = "_id";
+    public static final String RECIPE_KEY = "recipe";
 
-    @Column(name = "id", unique = true, onUniqueConflict = Column.ConflictAction.REPLACE)
-    @SerializedName("id")
-    private int id;
+//    @Column(name = "id", unique = true, onUniqueConflict = Column.ConflictAction.REPLACE)
+//    @SerializedName("id")
+//    private int id;
 
     @SerializedName("elements")
     private List<Item> items;
@@ -42,6 +45,10 @@ public class Ingredient extends Model implements Parcelable{
     }
 
     public void saveWithRelations(){
+//        if(id == 0){
+//            Ingredient ing = new Select(BaseColumns._ID).from(Ingredient.class).orderBy(BaseColumns._ID).limit(1).executeSingle();
+//            id = (int) (ing.getId() + 1);
+//        }
         save();
         for (Item item : items) {
             item.save();
@@ -57,7 +64,7 @@ public class Ingredient extends Model implements Parcelable{
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
-        dest.writeInt(this.id);
+//        dest.writeInt(this.id);
         dest.writeTypedList(items);
     }
 
@@ -65,7 +72,7 @@ public class Ingredient extends Model implements Parcelable{
     }
 
     protected Ingredient(Parcel in) {
-        this.id = in.readInt();
+//        this.id = in.readInt();
         this.items = in.createTypedArrayList(Item.CREATOR);
     }
 
@@ -78,4 +85,8 @@ public class Ingredient extends Model implements Parcelable{
             return new Ingredient[size];
         }
     };
+
+    public static List<Ingredient> getIngredientsOfRecipe(long id){
+        return new Select().from(Ingredient.class).where(RECIPE_KEY + " = ?", id).execute();
+    }
 }

@@ -3,10 +3,12 @@ package com.czura.recipies.model.entities;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.provider.BaseColumns;
+import android.util.Log;
 
 import com.activeandroid.Model;
 import com.activeandroid.annotation.Column;
 import com.activeandroid.annotation.Table;
+import com.activeandroid.query.Delete;
 import com.activeandroid.query.Select;
 import com.google.gson.annotations.SerializedName;
 
@@ -17,6 +19,9 @@ import java.util.List;
  */
 @Table(name = "Recipes", id = BaseColumns._ID)
 public class Recipe extends Model implements Parcelable{
+    public static final String TABLE_NAME = "Recipes";
+    public static final String ID = "_id";
+
     @Column(name = "id", unique = true, onUniqueConflict = Column.ConflictAction.REPLACE)
     @SerializedName("id")
     private int id;
@@ -45,7 +50,7 @@ public class Recipe extends Model implements Parcelable{
 
     public String getImageUrl() {
         if(images == null || images.size() == 0){
-            images = getMany(ImageData.class, "recipe");
+            images = ImageData.getImagesOfRecipe(getId());
         }
         if(images.size() > 0){
             return images.get(0).getImageUrl();
@@ -57,7 +62,7 @@ public class Recipe extends Model implements Parcelable{
 
         //TODO: offline mode - crash!
         if(ingredients == null || ingredients.size() == 0){
-            ingredients = getMany(Ingredient.class, "recipe");
+            ingredients = Ingredient.getIngredientsOfRecipe(getId());
         }
         return ingredients;
     }
@@ -70,6 +75,13 @@ public class Recipe extends Model implements Parcelable{
             imageData.save();
         }
 
+        if(id == 7306 || title.equals("Hjemmelaget ricotta")){
+            Log.d("Recipe", "INGREDIENTS: " + ingredients);
+            if(ingredients != null){
+                Log.d("Recipe", "INGREDIENTS: " + ingredients.size());
+            }
+        }
+
         for (Ingredient ingredient : ingredients) {
             ingredient.setRecipe(this);
             ingredient.saveWithRelations();
@@ -79,7 +91,6 @@ public class Recipe extends Model implements Parcelable{
     public static List<Recipe> getAllRecipes(){
         return new Select().from(Recipe.class).execute();
     }
-
 
     @Override
     public int describeContents() {
@@ -118,5 +129,13 @@ public class Recipe extends Model implements Parcelable{
 
     public static List<Recipe> withName(String name){
         return new Select().from(Recipe.class).where("title LIKE '%" + name + "%'").execute();
+    }
+
+    public static void deleteAll(){
+        new Delete().from(Recipe.class).execute();
+    }
+
+    public static Recipe getRecipeOfId(Long id){
+        return new Select().from(Recipe.class).where(BaseColumns._ID + " = ?", id).executeSingle();
     }
 }
