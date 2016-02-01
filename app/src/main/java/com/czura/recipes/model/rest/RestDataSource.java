@@ -2,7 +2,9 @@ package com.czura.recipes.model.rest;
 
 import com.czura.recipes.model.entities.ImageSize;
 import com.czura.recipes.model.entities.Recipe;
+import com.google.gson.GsonBuilder;
 
+import java.lang.reflect.Modifier;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -30,9 +32,12 @@ public class RestDataSource {
 
 //        client.interceptors().add(loggingInterceptor);
 
+        GsonBuilder builder = new GsonBuilder();
+        builder.excludeFieldsWithModifiers(Modifier.FINAL, Modifier.TRANSIENT, Modifier.STATIC);
+
         Retrofit recipesApiAdapter = new Retrofit.Builder()
                 .baseUrl(RecipesApi.END_POINT)
-                .addConverterFactory(GsonConverterFactory.create())
+                .addConverterFactory(GsonConverterFactory.create(builder.create()))
                 .client(client)
                 .build();
 
